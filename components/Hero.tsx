@@ -3,61 +3,76 @@
 import { useRef, useState } from "react";
 import {
   motion,
+  useMotionTemplate,
   useMotionValue,
+  useReducedMotion,
+  useScroll,
   useSpring,
   useTransform,
-  useMotionTemplate,
 } from "motion/react";
 import GradientBg from "./GradientBg";
+import { profile } from "@/lib/data";
 
 const LENS = 250;
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 const lineReveal = {
   hidden: { y: "110%" },
   show: (i: number) => ({
     y: "0%",
-    transition: { duration: 1, delay: 0.25 + i * 0.14, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 1, delay: 0.25 + i * 0.14, ease: EASE },
   }),
 };
 
+/**
+ * The headline is rendered twice: once for real, and once (isCopy) inside the
+ * lens, where it gets magnified and chromatically split. Keeping them in one
+ * component is what guarantees the magnified copy can never drift out of sync.
+ */
 function Headline({ isCopy = false }: { isCopy?: boolean }) {
   const Wrapper = isCopy ? "div" : motion.div;
-  const common = "block leading-[0.93] tracking-[-0.02em]";
+  const common = "leading-[0.93] tracking-[-0.02em]";
+  // The accent word rides the first line as a flex sibling rather than an absolute
+  // overlay — that way it can never collide with the headline at any viewport width.
+  const accent = (
+    <span className="font-accent shrink-0 text-[clamp(22px,4.2vw,64px)] lowercase text-[#f2a312]">
+      full-stack
+    </span>
+  );
+
   return (
     <h1
       aria-hidden={isCopy || undefined}
-      className="relative select-none text-[clamp(60px,12.5vw,190px)] font-medium text-[#f4f4ef]"
+      className="relative text-[clamp(50px,12vw,170px)] font-medium text-[#f4f4ef] select-none"
     >
       <span className="block overflow-hidden">
         <Wrapper
           {...(!isCopy && { variants: lineReveal, custom: 0, initial: "hidden", animate: "show" })}
-          className={common}
+          className={`${common} flex items-baseline justify-between gap-4`}
         >
-          Creative
+          <span>Creative</span>
+          {isCopy ? (
+            accent
+          ) : (
+            <motion.span
+              initial={{ opacity: 0, filter: "blur(12px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              transition={{ duration: 1.1, delay: 0.9, ease: "easeOut" }}
+              className="shrink-0"
+            >
+              {accent}
+            </motion.span>
+          )}
         </Wrapper>
       </span>
       <span className="block overflow-hidden">
         <Wrapper
           {...(!isCopy && { variants: lineReveal, custom: 1, initial: "hidden", animate: "show" })}
-          className={`${common} ml-[30vw] sm:ml-[36vw]`}
+          className={`${common} block ml-[16vw] sm:ml-[22vw]`}
         >
           developer
         </Wrapper>
       </span>
-      {isCopy ? (
-        <span className="font-accent absolute right-[1vw] top-[34%] text-[clamp(30px,4.6vw,74px)] lowercase text-[#f2a312]">
-          full-stack
-        </span>
-      ) : (
-        <motion.span
-          initial={{ opacity: 0, filter: "blur(12px)", scale: 0.9 }}
-          animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-          transition={{ duration: 1.1, delay: 0.9, ease: "easeOut" }}
-          className="font-accent absolute right-[1vw] top-[34%] text-[clamp(30px,4.6vw,74px)] lowercase text-[#f2a312]"
-        >
-          full-stack
-        </motion.span>
-      )}
     </h1>
   );
 }
@@ -72,7 +87,7 @@ function Meta({ isCopy = false }: { isCopy?: boolean }) {
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.9, delay: 1.2, ease: "easeOut" },
       })}
-      className="flex gap-14 text-[10px] font-semibold uppercase leading-relaxed tracking-[0.14em] sm:gap-24 sm:text-[11px]"
+      className="flex flex-wrap items-start gap-x-14 gap-y-8 text-[10px] leading-relaxed font-semibold tracking-[0.14em] uppercase sm:gap-x-20 sm:text-[11px]"
     >
       <div>
         <p className="text-[#f4f4ef]">
@@ -95,19 +110,89 @@ function Meta({ isCopy = false }: { isCopy?: boolean }) {
         </p>
         <p className="mt-4 text-[#f4f4ef]/55">Building Zoroo</p>
       </div>
+      <div className="hidden lg:block">
+        <p className="text-[#f4f4ef]">
+          Six years
+          <br />
+          shipping
+        </p>
+        <p className="mt-4 text-[#f4f4ef]/55">
+          ERP · SaaS
+          <br />
+          Storefronts · Apps
+        </p>
+      </div>
+
+      {/* Availability pill lives in the flow, so it can't land on top of the columns. */}
+      <AvailabilityPill isCopy={isCopy} />
     </Tag>
+  );
+}
+
+function AvailabilityPill({ isCopy }: { isCopy: boolean }) {
+  const inner = (
+    <>
+      <span className="relative flex h-1.5 w-1.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#2fe6c3] opacity-75" />
+        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#2fe6c3]" />
+      </span>
+      <span className="text-[#f4f4ef]/85">Available for work</span>
+    </>
+  );
+  const classes =
+    "hidden items-center gap-2.5 self-end rounded-full border border-white/15 bg-white/5 px-4 py-2.5 backdrop-blur-md sm:ml-auto sm:inline-flex";
+
+  // The magnified lens copy must not duplicate a focusable link.
+  return isCopy ? (
+    <div className={classes}>{inner}</div>
+  ) : (
+    <a
+      href={`mailto:${profile.email}`}
+      data-cursor="Email"
+      className={`${classes} transition-colors hover:border-[#2fe6c3]/60`}
+    >
+      {inner}
+    </a>
+  );
+}
+
+function ScrollCue() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.6, duration: 1 }}
+      className="hidden justify-end sm:flex"
+    >
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+        className="flex flex-col items-center"
+      >
+        <div className="h-16 w-px bg-[#f4f4ef]/45" />
+        <svg width="9" height="6" viewBox="0 0 9 6" fill="none" className="-mt-px">
+          <path d="M0.5 0.5L4.5 5L8.5 0.5" stroke="#f4f4ef" strokeOpacity="0.5" />
+        </svg>
+      </motion.div>
+    </motion.div>
   );
 }
 
 function HeroInner({ isCopy = false }: { isCopy?: boolean }) {
   return (
-    <div className="flex h-full flex-col justify-between px-[7vw] pb-12 pt-32 sm:pb-16">
+    <div className="flex h-full flex-col justify-between px-[var(--gutter)] pt-32 pb-12 sm:pb-16">
       <div className="flex flex-1 items-center">
         <div className="w-full">
           <Headline isCopy={isCopy} />
         </div>
       </div>
-      <Meta isCopy={isCopy} />
+      <div>
+        {/* Kept in the flow so it can't land on the meta row or the pill. */}
+        <div className="mb-10">
+          <ScrollCue />
+        </div>
+        <Meta isCopy={isCopy} />
+      </div>
     </div>
   );
 }
@@ -115,6 +200,7 @@ function HeroInner({ isCopy = false }: { isCopy?: boolean }) {
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const [lensOn, setLensOn] = useState(false);
+  const reduced = useReducedMotion();
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -127,6 +213,11 @@ export default function Hero() {
   const worldY = useTransform(y, (v) => LENS / 2 - v);
   const origin = useMotionTemplate`${x}px ${y}px`;
 
+  // The whole hero drifts up and dims slightly as the next section takes over.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
   const onMove = (e: React.MouseEvent) => {
     const rect = ref.current?.getBoundingClientRect();
     if (!rect) return;
@@ -138,11 +229,11 @@ export default function Hero() {
   return (
     <section
       ref={ref}
-      onMouseMove={onMove}
+      onMouseMove={reduced ? undefined : onMove}
       onMouseLeave={() => setLensOn(false)}
       className="relative h-svh min-h-[640px] w-full overflow-hidden"
     >
-      {/* SVG filter: RGB channel split for chromatic aberration */}
+      {/* RGB channel split, used only inside the lens */}
       <svg aria-hidden className="absolute h-0 w-0">
         <defs>
           <filter id="chromab" colorInterpolationFilters="sRGB">
@@ -174,70 +265,53 @@ export default function Hero() {
       </svg>
 
       <GradientBg variant="hero" />
+      <div className="grid-lines pointer-events-none absolute inset-0 opacity-45" />
 
-      <div className="relative z-10 h-full">
+      <motion.div style={{ y: contentY, opacity: contentOpacity }} className="relative z-10 h-full">
         <HeroInner />
-      </div>
+      </motion.div>
 
       {/* Glass lens following the cursor */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-0 z-20 hidden [@media(pointer:fine)]:block"
-        style={{ x: lensLeft, y: lensTop, width: LENS, height: LENS }}
-        animate={{ opacity: lensOn ? 1 : 0, scale: lensOn ? 1 : 0.6 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-      >
-        <div
-          className="absolute inset-0 overflow-hidden rounded-full"
-          style={
-            lensOn
-              ? {
-                  backdropFilter: "blur(9px) saturate(130%)",
-                  WebkitBackdropFilter: "blur(9px) saturate(130%)",
-                }
-              : undefined
-          }
+      {reduced ? null : (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute top-0 left-0 z-20 hidden [@media(pointer:fine)]:block"
+          style={{ x: lensLeft, y: lensTop, width: LENS, height: LENS }}
+          animate={{ opacity: lensOn ? 1 : 0, scale: lensOn ? 1 : 0.6 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          {/* magnified, chromatically-split copy of the hero content */}
-          <motion.div
-            className="absolute left-0 top-0 h-svh min-h-[640px] w-screen"
-            style={{ x: worldX, y: worldY }}
+          <div
+            className="absolute inset-0 overflow-hidden rounded-full"
+            style={
+              lensOn
+                ? {
+                    backdropFilter: "blur(9px) saturate(130%)",
+                    WebkitBackdropFilter: "blur(9px) saturate(130%)",
+                  }
+                : undefined
+            }
           >
             <motion.div
-              className="h-full w-full"
-              style={{
-                transformOrigin: origin,
-                scale: 1.16,
-                filter: "url(#chromab) blur(2.5px)",
-              }}
+              className="absolute top-0 left-0 h-svh min-h-[640px] w-screen"
+              style={{ x: worldX, y: worldY }}
             >
-              <HeroInner isCopy />
+              <motion.div
+                className="h-full w-full"
+                style={{
+                  transformOrigin: origin,
+                  scale: 1.16,
+                  filter: "url(#chromab) blur(2.5px)",
+                }}
+              >
+                <HeroInner isCopy />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </div>
-        {/* glass rim + highlight */}
-        <div className="absolute inset-0 rounded-full border border-white/15 shadow-[inset_0_0_35px_rgba(0,0,0,0.35),0_18px_50px_rgba(0,0,0,0.35)]" />
-        <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.14),transparent_45%)]" />
-      </motion.div>
-
-      {/* scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 1 }}
-        className="absolute bottom-12 right-[7vw] z-10 hidden sm:block"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center"
-        >
-          <div className="h-20 w-px bg-[#f4f4ef]/50" />
-          <svg width="9" height="6" viewBox="0 0 9 6" fill="none" className="-mt-px">
-            <path d="M0.5 0.5L4.5 5L8.5 0.5" stroke="#f4f4ef" strokeOpacity="0.5" />
-          </svg>
+          </div>
+          <div className="absolute inset-0 rounded-full border border-white/15 shadow-[inset_0_0_35px_rgba(0,0,0,0.35),0_18px_50px_rgba(0,0,0,0.35)]" />
+          <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.14),transparent_45%)]" />
         </motion.div>
-      </motion.div>
+      )}
+
     </section>
   );
 }

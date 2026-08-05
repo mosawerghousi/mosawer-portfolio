@@ -2,10 +2,25 @@
 
 @theme inline {
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-space), ui-monospace, SFMono-Regular, monospace;
   --color-ink: #f4f4ef;
   --color-coal: #06080a;
   --color-amber-a: #f2a312;
   --color-teal-a: #2fe6c3;
+  --color-plum: #8d1d5f;
+}
+
+:root {
+  --ink: #f4f4ef;
+  --coal: #06080a;
+  --amber: #f2a312;
+  --teal: #2fe6c3;
+  --gutter: 7vw;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 244, 239, 0.22) transparent;
 }
 
 body {
@@ -15,14 +30,33 @@ body {
   overflow-x: hidden;
 }
 
-/* Italic serif accent (like "visual" in the reference) */
+/* Hide the native cursor only where the custom one can actually follow it. */
+@media (pointer: fine) {
+  body.has-cursor,
+  body.has-cursor * {
+    cursor: none !important;
+  }
+}
+
 .font-accent {
   font-family: var(--font-playfair), Georgia, serif;
   font-style: italic;
   font-weight: 500;
 }
 
-/* Film-grain noise overlay */
+.font-mono-x {
+  font-family: var(--font-mono);
+}
+
+/* Shared micro-label used for every eyebrow on the page. */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Film-grain overlay */
 .noise-overlay {
   position: fixed;
   inset: -3%;
@@ -30,7 +64,7 @@ body {
   height: 106%;
   z-index: 60;
   pointer-events: none;
-  opacity: 0.08;
+  opacity: 0.07;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain-shift 1.2s steps(3) infinite;
@@ -43,8 +77,28 @@ body {
   100% { transform: translate(0, 0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .noise-overlay { animation: none; }
+/* Faint engineering grid — reads as blueprint, not as decoration. */
+.grid-lines {
+  background-image:
+    linear-gradient(to right, rgba(244, 244, 239, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 244, 239, 0.045) 1px, transparent 1px);
+  background-size: 84px 84px;
+}
+
+/* Hairline that fades out at both ends, used as a section divider. */
+.rule-fade {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(244, 244, 239, 0.18) 12%,
+    rgba(244, 244, 239, 0.18) 88%,
+    transparent
+  );
+}
+
+.text-balance {
+  text-wrap: balance;
 }
 
 ::selection {
@@ -52,18 +106,29 @@ body {
   color: #06080a;
 }
 
-/* minimal dark scrollbar */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(244, 244, 239, 0.25) transparent;
-}
-::-webkit-scrollbar {
-  width: 6px;
-}
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(244, 244, 239, 0.25);
+  background: rgba(244, 244, 239, 0.22);
   border-radius: 3px;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Horizontal rails scroll by drag; hide the bar but keep the scrolling. */
+.no-bar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-bar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noise-overlay { animation: none; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
