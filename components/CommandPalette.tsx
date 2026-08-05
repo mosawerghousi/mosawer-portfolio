@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { navLinks, profile, projects } from "@/lib/data";
+import { navLinks, profile, rankedProjects } from "@/lib/data";
 import { scrollToSection } from "./SmoothScroll";
 
 type Item = {
@@ -37,7 +37,7 @@ export default function CommandPalette() {
         group: "Jump to",
         run: () => scrollToSection(l.href),
       })),
-      ...projects.map((p) => ({
+      ...rankedProjects.map((p) => ({
         id: p.key,
         label: p.name,
         hint: p.kind,

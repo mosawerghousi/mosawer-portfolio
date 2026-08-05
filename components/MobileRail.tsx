@@ -4,14 +4,14 @@ import { useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { PhoneFrame } from "./Frames";
 import { Reveal, SectionHead } from "./primitives";
-import { phoneGallery, projects } from "@/lib/data";
+import { phoneGallery, rankedProjects } from "@/lib/data";
 
 /** Every Flutter screen, flattened into one rail with its kit's name attached. */
 const screens = phoneGallery.flatMap((kit) =>
   kit.images.map((src, i) => ({ src, kit: kit.name, href: kit.href, i }))
 );
 
-const mobileCount = projects.filter((p) => p.category === "mobile").length;
+const mobileCount = rankedProjects.filter((p) => p.category === "mobile").length;
 
 export default function MobileRail() {
   const section = useRef<HTMLElement>(null);
@@ -110,7 +110,7 @@ export default function MobileRail() {
         <Reveal className="mt-12 px-[var(--gutter)]">
           <div className="rule-fade mb-8" />
           <div className="flex flex-wrap gap-x-8 gap-y-4">
-            {projects
+            {rankedProjects
               .filter((p) => p.category === "mobile")
               .map((kit) => (
                 <a

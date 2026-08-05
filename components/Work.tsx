@@ -12,7 +12,13 @@ import {
 } from "motion/react";
 import { BrowserFrame, PhoneFrame, SpecPlate } from "./Frames";
 import { Reveal, SectionHead } from "./primitives";
-import { categories, projects, type Category, type Project } from "@/lib/data";
+import {
+  categories,
+  liveProjects,
+  rankedProjects,
+  type Category,
+  type Project,
+} from "@/lib/data";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -26,7 +32,7 @@ function TiltCard({
   index: number;
   onOpen: () => void;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
   const px = useMotionValue(0.5);
@@ -72,16 +78,25 @@ function TiltCard({
       transition={{ duration: 0.8, delay: (index % 3) * 0.08, ease: EASE }}
       style={{ perspective: 1200 }}
     >
-      <motion.button
+      {/*
+        The card body is a full-bleed overlay button rather than a <button> wrapping
+        everything, so the "visit live site" anchor can sit above it without nesting
+        interactive content inside a button.
+      */}
+      <motion.div
         ref={ref}
         onMouseMove={onMove}
         onMouseLeave={reset}
-        onClick={onOpen}
-        data-cursor="View"
         style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
         className="group relative block w-full text-left"
       >
         <div className="relative overflow-hidden rounded-[22px] border border-white/8 bg-[#0a0b0e] p-4 transition-colors duration-500 group-hover:border-white/18 sm:p-5">
+          <button
+            onClick={onOpen}
+            data-cursor="View"
+            aria-label={`View ${project.name}`}
+            className="absolute inset-0 z-10 rounded-[22px]"
+          />
           {/* glare that tracks the pointer across the card */}
           {reduced ? null : (
             <motion.div
@@ -133,7 +148,13 @@ function TiltCard({
                 <span className="eyebrow font-mono-x text-[#f2a312]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <span className="eyebrow text-[#f4f4ef]/40">{project.kind}</span>
+                <span className="eyebrow truncate text-[#f4f4ef]/40">{project.kind}</span>
+                {project.live ? (
+                  <span className="eyebrow inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#2fe6c3]/40 px-2 py-0.5 text-[#2fe6c3]">
+                    <span className="h-1 w-1 rounded-full bg-[#2fe6c3]" />
+                    Live
+                  </span>
+                ) : null}
               </div>
               <h3 className="mt-2.5 truncate text-[19px] font-semibold tracking-[-0.01em] text-[#f4f4ef] sm:text-[21px]">
                 {project.name}
@@ -142,20 +163,43 @@ function TiltCard({
                 {project.tagline}
               </p>
             </div>
-            <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:border-[#f2a312] group-hover:bg-[#f2a312]">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 20 20"
-                fill="none"
-                className="text-[#f4f4ef] transition-all duration-300 group-hover:-rotate-45 group-hover:text-[#06080a]"
-              >
-                <path d="M3 10h13M11 4.5 16.5 10 11 15.5" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
+            {/* z-20 lifts these above the card's full-bleed overlay button */}
+            <span className="relative z-20 mt-1 flex shrink-0 items-center gap-2">
+              {project.href ? (
+                <a
+                  href={project.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor="Open"
+                  aria-label={`Open ${project.name} in a new tab`}
+                  className="group/live flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 hover:border-[#2fe6c3] hover:bg-[#2fe6c3]"
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className="text-[#f4f4ef] transition-colors duration-300 group-hover/live:text-[#06080a]"
+                  >
+                    <path d="M5 15 15 5M7 5h8v8" stroke="currentColor" strokeWidth="1.8" />
+                  </svg>
+                </a>
+              ) : null}
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:border-[#f2a312] group-hover:bg-[#f2a312]">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  className="text-[#f4f4ef] transition-all duration-300 group-hover:-rotate-45 group-hover:text-[#06080a]"
+                >
+                  <path d="M3 10h13M11 4.5 16.5 10 11 15.5" stroke="currentColor" strokeWidth="1.6" />
+                </svg>
+              </span>
             </span>
           </div>
         </div>
-      </motion.button>
+      </motion.div>
     </motion.div>
   );
 }
@@ -319,18 +363,18 @@ export default function Work() {
   const [openKey, setOpenKey] = useState<string | null>(null);
 
   const shown = useMemo(
-    () => (filter === "all" ? projects : projects.filter((p) => p.category === filter)),
+    () => (filter === "all" ? rankedProjects : rankedProjects.filter((p) => p.category === filter)),
     [filter]
   );
 
-  const open = projects.find((p) => p.key === openKey) ?? null;
+  const open = rankedProjects.find((p) => p.key === openKey) ?? null;
   const close = useCallback(() => setOpenKey(null), []);
 
   // The command palette scrolls here, then asks us to open a specific card.
   useEffect(() => {
     const onOpen = (e: Event) => {
       const key = (e as CustomEvent<string>).detail;
-      if (projects.some((p) => p.key === key)) {
+      if (rankedProjects.some((p) => p.key === key)) {
         setFilter("all");
         setOpenKey(key);
       }
@@ -346,7 +390,7 @@ export default function Work() {
       <div className="relative z-10 px-[var(--gutter)] py-28 sm:py-36">
         <SectionHead
           index="02"
-          kicker={`Selected work · ${projects.length} builds`}
+          kicker={`Selected work · ${rankedProjects.length} builds · ${liveProjects.length} live`}
           title={
             <>
               The whole
@@ -367,7 +411,7 @@ export default function Work() {
           <div className="no-bar -mx-[var(--gutter)] flex gap-2.5 overflow-x-auto px-[var(--gutter)] pb-2">
             {categories.map((c) => {
               const count =
-                c.key === "all" ? projects.length : projects.filter((p) => p.category === c.key).length;
+                c.key === "all" ? rankedProjects.length : rankedProjects.filter((p) => p.category === c.key).length;
               const isActive = filter === c.key;
               return (
                 <button
