@@ -15,8 +15,9 @@ import { Reveal, SectionHead } from "./primitives";
 import {
   categories,
   liveProjects,
+  matchesFilter,
   rankedProjects,
-  type Category,
+  type Filter,
   type Project,
 } from "@/lib/data";
 
@@ -137,7 +138,7 @@ function TiltCard({
                 name={project.name}
                 kind={project.kind}
                 tech={project.tech}
-                accent={project.category === "product" ? "#2fe6c3" : "#f2a312"}
+                accent={project.category === "erp" ? "#2fe6c3" : "#f2a312"}
               />
             )}
           </div>
@@ -359,12 +360,19 @@ function Detail({ project, onClose }: { project: Project; onClose: () => void })
 }
 
 export default function Work() {
-  const [filter, setFilter] = useState<Category | "all">("all");
+  const [filter, setFilter] = useState<Filter>("all");
   const [openKey, setOpenKey] = useState<string | null>(null);
 
-  const shown = useMemo(
-    () => (filter === "all" ? rankedProjects : rankedProjects.filter((p) => p.category === filter)),
-    [filter]
+  const shown = useMemo(() => rankedProjects.filter((p) => matchesFilter(p, filter)), [filter]);
+
+  // Counted once per render rather than per chip, so the row doesn't walk the
+  // whole catalogue six times on every filter change.
+  const counts = useMemo(
+    () =>
+      Object.fromEntries(
+        categories.map((c) => [c.key, rankedProjects.filter((p) => matchesFilter(p, c.key)).length])
+      ) as Record<Filter, number>,
+    []
   );
 
   const open = rankedProjects.find((p) => p.key === openKey) ?? null;
@@ -410,8 +418,7 @@ export default function Work() {
         <Reveal className="mt-14">
           <div className="no-bar -mx-[var(--gutter)] flex gap-2.5 overflow-x-auto px-[var(--gutter)] pb-2">
             {categories.map((c) => {
-              const count =
-                c.key === "all" ? rankedProjects.length : rankedProjects.filter((p) => p.category === c.key).length;
+              const count = counts[c.key];
               const isActive = filter === c.key;
               return (
                 <button

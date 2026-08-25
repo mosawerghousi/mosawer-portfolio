@@ -11,6 +11,7 @@ const screens = phoneGallery.flatMap((kit) =>
   kit.images.map((src, i) => ({ src, kit: kit.name, href: kit.href, i }))
 );
 
+// Apps and kits both live under "mobile" now, so this counts the whole shelf.
 const mobileCount = rankedProjects.filter((p) => p.category === "mobile").length;
 
 export default function MobileRail() {
@@ -52,7 +53,7 @@ export default function MobileRail() {
         <div className="px-[var(--gutter)]">
           <SectionHead
             index="03"
-            kicker={`Flutter · ${mobileCount} kits · ${screens.length} screens`}
+            kicker={`Flutter · ${mobileCount} apps & kits · ${screens.length} screens`}
             title={
               <>
                 Built for the
@@ -62,7 +63,7 @@ export default function MobileRail() {
             }
             note={
               <>
-                Riverpod, go_router and clean architecture — one codebase per kit, running on
+                Riverpod, go_router and clean architecture — one codebase per build, running on
                 Android, iOS and desktop. Drag the rail.
               </>
             }

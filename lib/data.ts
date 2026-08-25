@@ -56,15 +56,34 @@ export const marquee = [
   "CI/CD",
 ];
 
-export type Category = "product" | "erp" | "web" | "mobile";
+/**
+ * What a thing *is*, not how well it went. Every project gets exactly one of these,
+ * so a Flutter app is filed under Mobile whether it's a client build or a UI kit —
+ * "in production" is already said by the Live badge, and doesn't need a tab of its own.
+ */
+export type Category = "web" | "mobile" | "erp" | "extension";
 
-export const categories: { key: Category | "all"; label: string; blurb: string }[] = [
+/**
+ * "New" cuts across the four buckets rather than being a fifth one — the newest
+ * Web build and the newest Flutter kit both belong in it. Bump YEAR_NEW each January
+ * and the tab refills itself; nothing per-project needs touching.
+ */
+export const YEAR_NEW = "2026";
+
+export type Filter = Category | "all" | "new";
+
+export const categories: { key: Filter; label: string; blurb: string }[] = [
   { key: "all", label: "Everything", blurb: "The whole shelf" },
-  { key: "product", label: "Products", blurb: "Live, in production, used by real businesses" },
-  { key: "erp", label: "ERP & Dashboards", blurb: "Operations software — the dense, data-heavy kind" },
-  { key: "web", label: "Web", blurb: "Storefronts, marketing sites, templates" },
+  { key: "new", label: "New", blurb: `Built this year — the ${YEAR_NEW} shelf` },
+  { key: "web", label: "Web", blurb: "Storefronts, marketing sites, studio work" },
   { key: "mobile", label: "Mobile", blurb: "Flutter, clean architecture, 60fps" },
+  { key: "erp", label: "ERP & Dashboards", blurb: "Operations software — the dense, data-heavy kind" },
+  { key: "extension", label: "Extensions & Tools", blurb: "Developer tooling that lives in the editor" },
 ];
+
+/** The one place the filter chips and the grid agree on what a tab contains. */
+export const matchesFilter = (p: Project, filter: Filter) =>
+  filter === "all" ? true : filter === "new" ? p.year.includes(YEAR_NEW) : p.category === filter;
 
 export type Project = {
   key: string;
@@ -95,14 +114,117 @@ export type Project = {
   featured?: boolean;
 };
 
+/**
+ * The headers below only group the file for reading — `category` is what the tabs
+ * filter on, and `rank` is what orders them. Add a project wherever it reads best.
+ */
 export const projects: Project[] = [
-  // ── Products in production ─────────────────────────────────────────────────
+  // ── Newest ─────────────────────────────────────────────────────────────────
+  {
+    key: "sarv",
+    rank: 1,
+    name: "Sarv",
+    tagline: "Site for a Dushanbe furniture and interior studio, built around one word",
+    category: "web",
+    kind: "Studio Site",
+    year: "2026",
+    role: "Design & build · Sole developer",
+    detail:
+      "Sarv (سرو) is the Persian cypress — evergreen, perfectly upright, and in Persian poetry the image of a graceful, unbending figure. The whole site is drawn out of that one word: deep forest green, vertical proportions, and a tagline that refuses to move — \"Rooms that stand still.\" GSAP and Lenis drive everything scroll-linked (masked headings, the featured projects that stack as you pass them, a preloader that draws the wordmark one letter at a time); Framer Motion handles list state on the two filtered indexes. No component names a colour: each section carries data-theme=\"dark | light | raised | bone\", which rebinds --bg, --fg and --rule, so the page alternates dark to light on one attribute. The logo, favicons, OG card and web manifest are all rasterised from four committed SVGs by a single script, and the sitemap is emitted at build time from the same typed content the pages read — a new project slug is listed the moment it exists.",
+    tech: [
+      "React 19",
+      "TypeScript",
+      "Vite",
+      "Tailwind CSS",
+      "GSAP",
+      "Lenis",
+      "Framer Motion",
+      "React Router",
+    ],
+    images: ["/work/sarv-1.webp", "/work/sarv-2.webp", "/work/sarv-3.webp", "/work/sarv-4.webp"],
+    frame: "browser",
+    href: "https://sarv-studio.vercel.app",
+    live: true,
+    metrics: [
+      { value: "GSAP + Lenis", label: "Scroll system" },
+      { value: "9 routes", label: "One typed content layer" },
+      { value: "1 script", label: "Every brand asset derived" },
+    ],
+    featured: true,
+  },
+
+  // ── In production — client work and shipped products ───────────────────────
+  {
+    key: "nplus1",
+    rank: 4,
+    name: "N+1 Query Detector",
+    tagline: "Finds N+1 queries at runtime, in any language, without leaving the editor",
+    category: "extension",
+    kind: "VS Code Extension",
+    year: "2026",
+    role: "Creator · Sole developer",
+    detail:
+      "Published as Universal N+1 Query Detector. Every other N+1 tool is tied to one framework and lives outside your editor. This one is neither. Probes hook your ORM and append one JSON object per query to an open, versioned log format; the extension groups those queries by call site and draws the warning on the loop that caused them — with the eager-loading fix for your ORM in the hover. Detection never parses source and never knows what framework produced the log, which is what makes “any language” a fact rather than a roadmap: five probes ship (Eloquent, Django ORM, SQLAlchemy, Prisma, Knex/Sequelize/TypeORM) and 28 ORMs already have a tailored fix hint. Published on both the VS Code Marketplace and Open VSX.",
+    tech: ["TypeScript", "VS Code API", "PHP", "Python", "Node.js", "esbuild"],
+    images: ["/work/nplus1-1.webp", "/work/nplus1-2.webp", "/work/nplus1-3.webp"],
+    frame: "browser",
+    href: "https://marketplace.visualstudio.com/items?itemName=mosawerghousi.n-plus-one-detector",
+    live: true,
+    metrics: [
+      { value: "28", label: "ORMs with a fix hint" },
+      { value: "5", label: "Probes shipping" },
+      { value: "MIT", label: "Open source" },
+    ],
+    featured: true,
+  },
+  {
+    key: "banoolearn",
+    rank: 5,
+    name: "BanooLearn",
+    tagline: "The Afghan national curriculum, grades 6–12, on a phone that never sees the internet",
+    category: "mobile",
+    kind: "Offline-First Android App",
+    year: "2026",
+    role: "Sole developer",
+    detail:
+      "Built for girls barred from secondary school in Afghanistan since 2021, on cheap Android hardware with expensive, unreliable data. The rule that overrides everything: the app is fully functional with the network permanently disabled — not degrading gracefully, fully functional. The release build declares no INTERNET permission at all, so Android enforces that guarantee rather than our discipline. Textbooks, voice lessons through a real foreground service, chapter practice, on-device exam scoring and progress all work offline, and libraries travel phone-to-phone over Nearby Connections with signature verification. Trilingual: Dari, Pashto and English, RTL-first.",
+    tech: ["Flutter", "Dart", "Riverpod", "drift", "Nearby Connections", "Ed25519"],
+    images: ["/mobile/banoolearn-1.webp", "/mobile/banoolearn-2.webp", "/mobile/banoolearn-3.webp"],
+    frame: "phone",
+    href: "https://banoolearn.vercel.app",
+    live: true,
+    metrics: [
+      { value: "0", label: "Network permissions" },
+      { value: "3", label: "Languages, RTL-first" },
+      { value: "138", label: "Tests passing" },
+    ],
+    featured: true,
+  },
+  {
+    key: "tribe",
+    rank: 6,
+    name: "Tribe",
+    tagline: "A photo and video social app — Flutter client over a Laravel API",
+    category: "mobile",
+    kind: "Social App · Flutter + Laravel",
+    year: "2026",
+    role: "Sole developer — client and API",
+    detail:
+      "Both halves built end-to-end. The Flutter client is clean architecture one vertical slice per feature, with an enforced dependency rule — a test fails the build if anything under domain/ imports Flutter, or if a data-layer model reaches a widget signature. The Laravel 11 API is layered the same way, ships a seeded demo graph including a private account for testing the privacy rules, and boots on SQLite with no Redis, Docker or database server. A contract check parses real server responses with the real client models, so a field renamed on the API fails there rather than at runtime on a device.",
+    tech: ["Flutter", "Dart", "Riverpod", "Laravel 11", "PHP 8.3", "Sanctum", "drift"],
+    images: ["/mobile/tribe-1.webp", "/mobile/tribe-2.webp", "/mobile/tribe-3.webp"],
+    frame: "phone",
+    metrics: [
+      { value: "Clean", label: "Architecture, test-enforced" },
+      { value: "2", label: "Codebases — client + API" },
+    ],
+  },
   {
     key: "zoroo",
-    rank: 2,
+    rank: 3,
     name: "Zoroo",
     tagline: "Multi-tenant business SaaS for companies across Afghanistan",
-    category: "product",
+    category: "erp",
     kind: "ERP / SaaS Platform",
     year: "2024 — now",
     role: "Lead contributor · Full-stack & DevOps",
@@ -122,10 +244,10 @@ export const projects: Project[] = [
   },
   {
     key: "tezload",
-    rank: 5,
+    rank: 9,
     name: "TezLoad",
     tagline: "Fast media downloads — pick a quality, get a signed link",
-    category: "product",
+    category: "web",
     kind: "Media Platform",
     year: "2026",
     role: "Sole developer",
@@ -143,10 +265,10 @@ export const projects: Project[] = [
   },
   {
     key: "kctp",
-    rank: 10,
+    rank: 14,
     name: "KCTP",
     tagline: "Complete printing-press ERP — built and run solo",
-    category: "product",
+    category: "erp",
     kind: "ERP · Client Work",
     year: "2023 — now",
     role: "Sole developer · Database to deploy",
@@ -166,10 +288,10 @@ export const projects: Project[] = [
   },
   {
     key: "lajward",
-    rank: 13,
+    rank: 17,
     name: "Lajward",
     tagline: "Multi-branch clinic ERP for Afghan healthcare",
-    category: "product",
+    category: "erp",
     kind: "Healthcare ERP",
     year: "2025",
     role: "Full-stack",
@@ -186,10 +308,10 @@ export const projects: Project[] = [
   },
   {
     key: "nairika",
-    rank: 19,
+    rank: 23,
     name: "Nairika",
     tagline: "Server-rendered storefront for the Nairika Manteau apparel line",
-    category: "product",
+    category: "web",
     kind: "E-commerce",
     year: "2024",
     role: "Lead web developer",
@@ -203,10 +325,10 @@ export const projects: Project[] = [
   },
   {
     key: "safeed",
-    rank: 24,
+    rank: 28,
     name: "Safeed",
     tagline: "Printing-press management system, Dari-first",
-    category: "product",
+    category: "erp",
     kind: "ERP · Demo",
     year: "2025",
     role: "Sole developer",
@@ -221,10 +343,10 @@ export const projects: Project[] = [
   },
   {
     key: "mizan",
-    rank: 25,
+    rank: 29,
     name: "Mizan Sarafi",
     tagline: "Multi-tenant hawala & currency-exchange back office",
-    category: "product",
+    category: "erp",
     kind: "Fintech",
     year: "2024",
     role: "Sole developer",
@@ -242,10 +364,10 @@ export const projects: Project[] = [
   },
   {
     key: "meridian",
-    rank: 26,
+    rank: 30,
     name: "Meridian",
     tagline: "Project & team management with role-based admin",
-    category: "product",
+    category: "erp",
     kind: "Management System",
     year: "2025",
     role: "Full-stack",
@@ -257,10 +379,10 @@ export const projects: Project[] = [
   },
   {
     key: "sauda",
-    rank: 35,
+    rank: 39,
     name: "Sauda",
     tagline: "Trilingual two-sided marketplace built for low-bandwidth Afghanistan",
-    category: "product",
+    category: "mobile",
     kind: "Marketplace · Flutter + Django",
     year: "2025",
     role: "Sole developer",
@@ -276,10 +398,10 @@ export const projects: Project[] = [
   },
   {
     key: "correspondence",
-    rank: 36,
+    rank: 40,
     name: "Correspondence MS",
     tagline: "Document and correspondence tracking for organisations",
-    category: "product",
+    category: "erp",
     kind: "Internal System",
     year: "2025",
     role: "Full-stack",
@@ -293,7 +415,7 @@ export const projects: Project[] = [
   // ── ERP & dashboards ───────────────────────────────────────────────────────
   {
     key: "cadre",
-    rank: 4,
+    rank: 8,
     name: "Cadre",
     tagline: "Freelancing dashboard portal — 19 pages, warm & lime",
     category: "erp",
@@ -312,7 +434,7 @@ export const projects: Project[] = [
   },
   {
     key: "mediso",
-    rank: 7,
+    rank: 11,
     name: "Mediso",
     tagline: "Hospital ERP dashboard — 26 pages of clinical operations",
     category: "erp",
@@ -331,7 +453,7 @@ export const projects: Project[] = [
   },
   {
     key: "kabulre",
-    rank: 11,
+    rank: 15,
     name: "Kabul Real Estate SaaS",
     tagline: "Property management for Kabul Province — listings, agents, analytics",
     category: "erp",
@@ -350,7 +472,7 @@ export const projects: Project[] = [
   },
   {
     key: "taskms",
-    rank: 12,
+    rank: 16,
     name: "TaskMS",
     tagline: "Commercial-grade task management dashboard",
     category: "erp",
@@ -371,7 +493,7 @@ export const projects: Project[] = [
   },
   {
     key: "restpro",
-    rank: 15,
+    rank: 19,
     name: "RealEstate Pro",
     tagline: "Premium real-estate SaaS — listings, agents, deal pipeline",
     category: "erp",
@@ -386,7 +508,7 @@ export const projects: Project[] = [
   },
   {
     key: "crypto",
-    rank: 16,
+    rank: 20,
     name: "Crypto Desk",
     tagline: "Trading terminal — markets, portfolio, order flow",
     category: "erp",
@@ -401,7 +523,7 @@ export const projects: Project[] = [
   },
   {
     key: "tradeup",
-    rank: 18,
+    rank: 22,
     name: "Estate ERP",
     tagline: "Real-estate operations — properties, leases, clients, occupancy",
     category: "erp",
@@ -417,7 +539,7 @@ export const projects: Project[] = [
   },
   {
     key: "lahomes",
-    rank: 20,
+    rank: 24,
     name: "LaHomes",
     tagline: "Real-estate analytics — properties, agents, revenue at a glance",
     category: "erp",
@@ -432,7 +554,7 @@ export const projects: Project[] = [
   },
   {
     key: "learnpeak",
-    rank: 29,
+    rank: 33,
     name: "LearnPeak",
     tagline: "Learning platform — courses, progress, dark-first",
     category: "erp",
@@ -449,7 +571,7 @@ export const projects: Project[] = [
   },
   {
     key: "travelcrm",
-    rank: 31,
+    rank: 35,
     name: "TravelCRM",
     tagline: "Travel agency management — customers, cases, payments",
     category: "erp",
@@ -466,7 +588,7 @@ export const projects: Project[] = [
   },
   {
     key: "pharmacy",
-    rank: 32,
+    rank: 36,
     name: "Pharmacy PMS",
     tagline: "Pharmacy management — stock, dispensing, prescriptions",
     category: "erp",
@@ -483,7 +605,7 @@ export const projects: Project[] = [
   },
   {
     key: "travelx",
-    rank: 39,
+    rank: 43,
     name: "TravelX",
     tagline: "Travel agency ERP — tickets, visas, trips, suppliers",
     category: "erp",
@@ -502,7 +624,7 @@ export const projects: Project[] = [
   // ── Web ────────────────────────────────────────────────────────────────────
   {
     key: "aurum",
-    rank: 1,
+    rank: 2,
     name: "AURUM",
     tagline: "Cinematic luxury watch storefront, bilingual with true RTL",
     category: "web",
@@ -525,7 +647,7 @@ export const projects: Project[] = [
   },
   {
     key: "roamly",
-    rank: 8,
+    rank: 12,
     name: "Roamly",
     tagline: "Travel-planning template — 11 pages, deploy-ready",
     category: "web",
@@ -544,7 +666,7 @@ export const projects: Project[] = [
   },
   {
     key: "honey",
-    rank: 17,
+    rank: 21,
     name: "Golden Harvest",
     tagline: "Honey product landing page — warm, editorial, unhurried",
     category: "web",
@@ -561,7 +683,7 @@ export const projects: Project[] = [
   },
   {
     key: "tbazaar",
-    rank: 28,
+    rank: 32,
     name: "TasksBazaar",
     tagline: "Marketplace for hiring local, verified professionals",
     category: "web",
@@ -578,7 +700,7 @@ export const projects: Project[] = [
   },
   {
     key: "msoftware",
-    rank: 33,
+    rank: 37,
     name: "MSoftware",
     tagline: "Studio site — project gallery & UI-kit showcase",
     category: "web",
@@ -595,7 +717,7 @@ export const projects: Project[] = [
   },
   {
     key: "nairika-corp",
-    rank: 34,
+    rank: 38,
     name: "Nairika Kohsar Trading",
     tagline: "Corporate site — production, export, import & financial training",
     category: "web",
@@ -614,7 +736,7 @@ export const projects: Project[] = [
   // ── Mobile ─────────────────────────────────────────────────────────────────
   {
     key: "luxe",
-    rank: 3,
+    rank: 7,
     name: "Luxe",
     tagline: "Luxury hotel discovery & multi-step reservation",
     category: "mobile",
@@ -633,7 +755,7 @@ export const projects: Project[] = [
   },
   {
     key: "yum",
-    rank: 6,
+    rank: 10,
     name: "Yum",
     tagline: "Food delivery — discovery, cart, checkout",
     category: "mobile",
@@ -652,7 +774,7 @@ export const projects: Project[] = [
   },
   {
     key: "jewels",
-    rank: 9,
+    rank: 13,
     name: "Royal Brilliance Jewels",
     tagline: "Premium jewellery e-commerce, full shopping flow",
     category: "mobile",
@@ -670,7 +792,7 @@ export const projects: Project[] = [
   },
   {
     key: "zestora",
-    rank: 14,
+    rank: 18,
     name: "Zestora",
     tagline: "Recipes — cook step by step, save favourites",
     category: "mobile",
@@ -687,7 +809,7 @@ export const projects: Project[] = [
   },
   {
     key: "tokotok",
-    rank: 21,
+    rank: 25,
     name: "TokoTok",
     tagline: "Electronics storefront — deals, categories, cart",
     category: "mobile",
@@ -704,7 +826,7 @@ export const projects: Project[] = [
   },
   {
     key: "verdant",
-    rank: 22,
+    rank: 26,
     name: "Verdant Market",
     tagline: "Plant shop — browse by light and care level",
     category: "mobile",
@@ -721,7 +843,7 @@ export const projects: Project[] = [
   },
   {
     key: "salesdash",
-    rank: 23,
+    rank: 27,
     name: "Sales Dashboard",
     tagline: "Revenue analytics in your pocket — trends by region",
     category: "mobile",
@@ -738,7 +860,7 @@ export const projects: Project[] = [
   },
   {
     key: "modanisa",
-    rank: 27,
+    rank: 31,
     name: "Modanisa",
     tagline: "Modest fashion — onboarding through checkout",
     category: "mobile",
@@ -755,7 +877,7 @@ export const projects: Project[] = [
   },
   {
     key: "solevibe",
-    rank: 30,
+    rank: 34,
     name: "SoleVibe",
     tagline: "Footwear commerce — OTP auth, wishlist, dark",
     category: "mobile",
@@ -767,12 +889,12 @@ export const projects: Project[] = [
     tech: ["Flutter", "Dart"],
     images: ["/mobile/solevibe-1.webp", "/mobile/solevibe-2.webp", "/mobile/solevibe-3.webp"],
     frame: "phone",
-    href: "https://solevibe-uikit.vercel.app/",
+    href: "https://web-mu-pied-24.vercel.app/",
     live: true,
   },
   {
     key: "fitquest",
-    rank: 37,
+    rank: 41,
     name: "FitQuest",
     tagline: "Workout tracker & personal trainer",
     category: "mobile",
@@ -789,7 +911,7 @@ export const projects: Project[] = [
   },
   {
     key: "nimbus",
-    rank: 38,
+    rank: 42,
     name: "Nimbus",
     tagline: "Neobank — real-time ledger, cards, transfers",
     category: "mobile",
@@ -806,7 +928,7 @@ export const projects: Project[] = [
   },
   {
     key: "iqraa",
-    rank: 40,
+    rank: 44,
     name: "Iqraa",
     tagline: "Learn the Quran — recitation guidance & daily practice",
     category: "mobile",
@@ -823,7 +945,7 @@ export const projects: Project[] = [
   },
   {
     key: "parking",
-    rank: 41,
+    rank: 45,
     name: "Smart Parking",
     tagline: "Real-time parking finder — map, reserve, EV charging",
     category: "mobile",
@@ -838,7 +960,7 @@ export const projects: Project[] = [
   },
   {
     key: "whatsapp",
-    rank: 42,
+    rank: 46,
     name: "Messenger Kit",
     tagline: "Pixel-faithful messaging UI — chats, calls, status",
     category: "mobile",
@@ -853,7 +975,7 @@ export const projects: Project[] = [
   },
   {
     key: "kaara",
-    rank: 43,
+    rank: 47,
     name: "Kaara",
     tagline: "Simple sales & bookkeeping for shopkeepers, in Dari",
     category: "mobile",
@@ -868,7 +990,7 @@ export const projects: Project[] = [
   },
   {
     key: "removemark",
-    rank: 44,
+    rank: 48,
     name: "Watermark Remover",
     tagline: "Strip watermarks from images and video on-device",
     category: "mobile",
@@ -883,7 +1005,7 @@ export const projects: Project[] = [
   },
   {
     key: "restflutter",
-    rank: 45,
+    rank: 49,
     name: "Real Estate App",
     tagline: "Offline-first property management on Flutter",
     category: "mobile",
@@ -910,6 +1032,9 @@ export const featured = rankedProjects.filter((p) => p.featured);
 
 /** Deployed and reachable — the ones a visitor can go and click around in. */
 export const liveProjects = rankedProjects.filter((p) => p.live);
+
+/** What the "New" tab shows: this year's builds, still ranked best-first. */
+export const newProjects = rankedProjects.filter((p) => matchesFilter(p, "new"));
 
 /** Phone gallery — the Flutter kits that have real screenshots to show. */
 export const phoneGallery = rankedProjects.filter(
