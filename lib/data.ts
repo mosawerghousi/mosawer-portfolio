@@ -190,10 +190,48 @@ export const projects: Project[] = [
     featured: true,
   },
 
+  {
+    key: "novark",
+    rank: 3,
+    name: "NOVARK",
+    tagline: "A convoy leaving a dying sun, with every planet and skyline drawn in code",
+    category: "web",
+    kind: "Marketing Site Template",
+    year: "2026",
+    role: "Design & build · Sole developer",
+    detail:
+      "A cinematic template for a narrative sci-fi universe — the last convoy leaving a collapsing solar home — built under one constraint: nothing in the repository is an asset. There is no photography, no 3D render, no video file and no WebGL. The planets are layered CSS gradients under an SVG turbulence filter, the starfield and the orbital belt are canvas, the cryo-pod and the five division badges are SVG, and the ruined skyline is generated from a seed, so the same city redraws identically on every load. That buys three things at once: nothing to license, a bundle carrying no media, and a template that recolours from a single stylesheet — every token in tokens.css is declared twice, once as a hex value and once as space-separated RGB channels, so Tailwind opacity modifiers read the same source as plain CSS. GSAP ScrollTrigger and Lenis drive everything scroll-linked. The identity is derived rather than duplicated: siteConfig.ts is the only place the name, nav, contacts and route list exist, one script rasterises the favicon set, apple-touch icon and OG card from four committed SVGs, and the sitemap is emitted from that same route list at build time.",
+    tech: [
+      "React 19",
+      "TypeScript",
+      "Vite",
+      "Tailwind CSS",
+      "GSAP ScrollTrigger",
+      "Lenis",
+      "React Router",
+      "Canvas + SVG",
+    ],
+    images: [
+      "/work/novark-1.webp",
+      "/work/novark-2.webp",
+      "/work/novark-3.webp",
+      "/work/novark-4.webp",
+    ],
+    frame: "browser",
+    href: "https://novark-eosin.vercel.app",
+    live: true,
+    metrics: [
+      { value: "0 assets", label: "Every visual drawn in code" },
+      { value: "1 stylesheet", label: "Recolours the whole site" },
+      { value: "6 routes", label: "Sitemap emitted at build" },
+    ],
+    featured: true,
+  },
+
   // ── In production — client work and shipped products ───────────────────────
   {
     key: "nplus1",
-    rank: 5,
+    rank: 6,
     name: "N+1 Query Detector",
     tagline: "Finds N+1 queries at runtime, in any language, without leaving the editor",
     category: "extension",
@@ -216,7 +254,7 @@ export const projects: Project[] = [
   },
   {
     key: "banoolearn",
-    rank: 6,
+    rank: 7,
     name: "BanooLearn",
     tagline: "The Afghan national curriculum, grades 6–12, on a phone that never sees the internet",
     category: "mobile",
@@ -239,7 +277,7 @@ export const projects: Project[] = [
   },
   {
     key: "tribe",
-    rank: 7,
+    rank: 8,
     name: "Tribe",
     tagline: "A photo and video social app — Flutter client over a Laravel API",
     category: "mobile",
@@ -258,7 +296,7 @@ export const projects: Project[] = [
   },
   {
     key: "zoroo",
-    rank: 4,
+    rank: 5,
     name: "Zoroo",
     tagline: "Multi-tenant business SaaS for companies across Afghanistan",
     category: "erp",
@@ -281,7 +319,7 @@ export const projects: Project[] = [
   },
   {
     key: "tezload",
-    rank: 10,
+    rank: 11,
     name: "TezLoad",
     tagline: "Fast media downloads — pick a quality, get a signed link",
     category: "web",
@@ -302,7 +340,7 @@ export const projects: Project[] = [
   },
   {
     key: "kctp",
-    rank: 15,
+    rank: 16,
     name: "KCTP",
     tagline: "Complete printing-press ERP — built and run solo",
     category: "erp",
@@ -325,7 +363,7 @@ export const projects: Project[] = [
   },
   {
     key: "lajward",
-    rank: 18,
+    rank: 19,
     name: "Lajward",
     tagline: "Multi-branch clinic ERP for Afghan healthcare",
     category: "erp",
@@ -345,7 +383,7 @@ export const projects: Project[] = [
   },
   {
     key: "nairika",
-    rank: 24,
+    rank: 25,
     name: "Nairika",
     tagline: "Server-rendered storefront for the Nairika Manteau apparel line",
     category: "web",
@@ -362,7 +400,7 @@ export const projects: Project[] = [
   },
   {
     key: "safeed",
-    rank: 29,
+    rank: 30,
     name: "Safeed",
     tagline: "Printing-press management system, Dari-first",
     category: "erp",
@@ -380,7 +418,7 @@ export const projects: Project[] = [
   },
   {
     key: "mizan",
-    rank: 30,
+    rank: 31,
     name: "Mizan Sarafi",
     tagline: "Multi-tenant hawala & currency-exchange back office",
     category: "erp",
@@ -401,7 +439,7 @@ export const projects: Project[] = [
   },
   {
     key: "meridian",
-    rank: 31,
+    rank: 32,
     name: "Meridian",
     tagline: "Project & team management with role-based admin",
     category: "erp",
@@ -416,7 +454,7 @@ export const projects: Project[] = [
   },
   {
     key: "sauda",
-    rank: 40,
+    rank: 41,
     name: "Sauda",
     tagline: "Trilingual two-sided marketplace built for low-bandwidth Afghanistan",
     category: "mobile",
@@ -435,7 +473,7 @@ export const projects: Project[] = [
   },
   {
     key: "correspondence",
-    rank: 41,
+    rank: 42,
     name: "Correspondence MS",
     tagline: "Document and correspondence tracking for organisations",
     category: "erp",
@@ -452,7 +490,7 @@ export const projects: Project[] = [
   // ── ERP & dashboards ───────────────────────────────────────────────────────
   {
     key: "cadre",
-    rank: 9,
+    rank: 10,
     name: "Cadre",
     tagline: "Freelancing dashboard portal — 19 pages, warm & lime",
     category: "erp",
@@ -471,7 +509,7 @@ export const projects: Project[] = [
   },
   {
     key: "mediso",
-    rank: 12,
+    rank: 13,
     name: "Mediso",
     tagline: "Hospital ERP dashboard — 26 pages of clinical operations",
     category: "erp",
@@ -490,7 +528,7 @@ export const projects: Project[] = [
   },
   {
     key: "kabulre",
-    rank: 16,
+    rank: 17,
     name: "Kabul Real Estate SaaS",
     tagline: "Property management for Kabul Province — listings, agents, analytics",
     category: "erp",
@@ -509,7 +547,7 @@ export const projects: Project[] = [
   },
   {
     key: "taskms",
-    rank: 17,
+    rank: 18,
     name: "TaskMS",
     tagline: "Commercial-grade task management dashboard",
     category: "erp",
@@ -530,7 +568,7 @@ export const projects: Project[] = [
   },
   {
     key: "restpro",
-    rank: 20,
+    rank: 21,
     name: "RealEstate Pro",
     tagline: "Premium real-estate SaaS — listings, agents, deal pipeline",
     category: "erp",
@@ -545,7 +583,7 @@ export const projects: Project[] = [
   },
   {
     key: "crypto",
-    rank: 21,
+    rank: 22,
     name: "Crypto Desk",
     tagline: "Trading terminal — markets, portfolio, order flow",
     category: "erp",
@@ -560,7 +598,7 @@ export const projects: Project[] = [
   },
   {
     key: "tradeup",
-    rank: 23,
+    rank: 24,
     name: "Estate ERP",
     tagline: "Real-estate operations — properties, leases, clients, occupancy",
     category: "erp",
@@ -576,7 +614,7 @@ export const projects: Project[] = [
   },
   {
     key: "lahomes",
-    rank: 25,
+    rank: 26,
     name: "LaHomes",
     tagline: "Real-estate analytics — properties, agents, revenue at a glance",
     category: "erp",
@@ -591,7 +629,7 @@ export const projects: Project[] = [
   },
   {
     key: "learnpeak",
-    rank: 34,
+    rank: 35,
     name: "LearnPeak",
     tagline: "Learning platform — courses, progress, dark-first",
     category: "erp",
@@ -608,7 +646,7 @@ export const projects: Project[] = [
   },
   {
     key: "travelcrm",
-    rank: 36,
+    rank: 37,
     name: "TravelCRM",
     tagline: "Travel agency management — customers, cases, payments",
     category: "erp",
@@ -625,7 +663,7 @@ export const projects: Project[] = [
   },
   {
     key: "pharmacy",
-    rank: 37,
+    rank: 38,
     name: "Pharmacy PMS",
     tagline: "Pharmacy management — stock, dispensing, prescriptions",
     category: "erp",
@@ -642,7 +680,7 @@ export const projects: Project[] = [
   },
   {
     key: "travelx",
-    rank: 44,
+    rank: 45,
     name: "TravelX",
     tagline: "Travel agency ERP — tickets, visas, trips, suppliers",
     category: "erp",
@@ -661,7 +699,7 @@ export const projects: Project[] = [
   // ── Web ────────────────────────────────────────────────────────────────────
   {
     key: "aurum",
-    rank: 3,
+    rank: 4,
     name: "AURUM",
     tagline: "Cinematic luxury watch storefront, bilingual with true RTL",
     category: "web",
@@ -684,7 +722,7 @@ export const projects: Project[] = [
   },
   {
     key: "roamly",
-    rank: 13,
+    rank: 14,
     name: "Roamly",
     tagline: "Travel-planning template — 11 pages, deploy-ready",
     category: "web",
@@ -703,7 +741,7 @@ export const projects: Project[] = [
   },
   {
     key: "honey",
-    rank: 22,
+    rank: 23,
     name: "Golden Harvest",
     tagline: "Honey product landing page — warm, editorial, unhurried",
     category: "web",
@@ -720,7 +758,7 @@ export const projects: Project[] = [
   },
   {
     key: "tbazaar",
-    rank: 33,
+    rank: 34,
     name: "TasksBazaar",
     tagline: "Marketplace for hiring local, verified professionals",
     category: "web",
@@ -737,7 +775,7 @@ export const projects: Project[] = [
   },
   {
     key: "msoftware",
-    rank: 38,
+    rank: 39,
     name: "MSoftware",
     tagline: "Studio site — project gallery & UI-kit showcase",
     category: "web",
@@ -754,7 +792,7 @@ export const projects: Project[] = [
   },
   {
     key: "nairika-corp",
-    rank: 39,
+    rank: 40,
     name: "Nairika Kohsar Trading",
     tagline: "Corporate site — production, export, import & financial training",
     category: "web",
@@ -773,7 +811,7 @@ export const projects: Project[] = [
   // ── Mobile ─────────────────────────────────────────────────────────────────
   {
     key: "luxe",
-    rank: 8,
+    rank: 9,
     name: "Luxe",
     tagline: "Luxury hotel discovery & multi-step reservation",
     category: "mobile",
@@ -792,7 +830,7 @@ export const projects: Project[] = [
   },
   {
     key: "yum",
-    rank: 11,
+    rank: 12,
     name: "Yum",
     tagline: "Food delivery — discovery, cart, checkout",
     category: "mobile",
@@ -811,7 +849,7 @@ export const projects: Project[] = [
   },
   {
     key: "jewels",
-    rank: 14,
+    rank: 15,
     name: "Royal Brilliance Jewels",
     tagline: "Premium jewellery e-commerce, full shopping flow",
     category: "mobile",
@@ -829,7 +867,7 @@ export const projects: Project[] = [
   },
   {
     key: "zestora",
-    rank: 19,
+    rank: 20,
     name: "Zestora",
     tagline: "Recipes — cook step by step, save favourites",
     category: "mobile",
@@ -846,7 +884,7 @@ export const projects: Project[] = [
   },
   {
     key: "tokotok",
-    rank: 26,
+    rank: 27,
     name: "TokoTok",
     tagline: "Electronics storefront — deals, categories, cart",
     category: "mobile",
@@ -863,7 +901,7 @@ export const projects: Project[] = [
   },
   {
     key: "verdant",
-    rank: 27,
+    rank: 28,
     name: "Verdant Market",
     tagline: "Plant shop — browse by light and care level",
     category: "mobile",
@@ -880,7 +918,7 @@ export const projects: Project[] = [
   },
   {
     key: "salesdash",
-    rank: 28,
+    rank: 29,
     name: "Sales Dashboard",
     tagline: "Revenue analytics in your pocket — trends by region",
     category: "mobile",
@@ -897,7 +935,7 @@ export const projects: Project[] = [
   },
   {
     key: "modanisa",
-    rank: 32,
+    rank: 33,
     name: "Modanisa",
     tagline: "Modest fashion — onboarding through checkout",
     category: "mobile",
@@ -914,7 +952,7 @@ export const projects: Project[] = [
   },
   {
     key: "solevibe",
-    rank: 35,
+    rank: 36,
     name: "SoleVibe",
     tagline: "Footwear commerce — OTP auth, wishlist, dark",
     category: "mobile",
@@ -931,7 +969,7 @@ export const projects: Project[] = [
   },
   {
     key: "fitquest",
-    rank: 42,
+    rank: 43,
     name: "FitQuest",
     tagline: "Workout tracker & personal trainer",
     category: "mobile",
@@ -948,7 +986,7 @@ export const projects: Project[] = [
   },
   {
     key: "nimbus",
-    rank: 43,
+    rank: 44,
     name: "Nimbus",
     tagline: "Neobank — real-time ledger, cards, transfers",
     category: "mobile",
@@ -965,7 +1003,7 @@ export const projects: Project[] = [
   },
   {
     key: "iqraa",
-    rank: 45,
+    rank: 46,
     name: "Iqraa",
     tagline: "Learn the Quran — recitation guidance & daily practice",
     category: "mobile",
@@ -982,7 +1020,7 @@ export const projects: Project[] = [
   },
   {
     key: "parking",
-    rank: 46,
+    rank: 47,
     name: "Smart Parking",
     tagline: "Real-time parking finder — map, reserve, EV charging",
     category: "mobile",
@@ -997,7 +1035,7 @@ export const projects: Project[] = [
   },
   {
     key: "whatsapp",
-    rank: 47,
+    rank: 48,
     name: "Messenger Kit",
     tagline: "Pixel-faithful messaging UI — chats, calls, status",
     category: "mobile",
@@ -1012,7 +1050,7 @@ export const projects: Project[] = [
   },
   {
     key: "kaara",
-    rank: 48,
+    rank: 49,
     name: "Kaara",
     tagline: "Simple sales & bookkeeping for shopkeepers, in Dari",
     category: "mobile",
@@ -1027,7 +1065,7 @@ export const projects: Project[] = [
   },
   {
     key: "removemark",
-    rank: 49,
+    rank: 50,
     name: "Watermark Remover",
     tagline: "Strip watermarks from images and video on-device",
     category: "mobile",
@@ -1042,7 +1080,7 @@ export const projects: Project[] = [
   },
   {
     key: "restflutter",
-    rank: 50,
+    rank: 51,
     name: "Real Estate App",
     tagline: "Offline-first property management on Flutter",
     category: "mobile",
